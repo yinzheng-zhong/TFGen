@@ -46,6 +46,8 @@ class TFGen:
 
         samples = zip(case_ids, attributes)
 
+        # _ = [self.input_stream.put(sample) for sample in samples]
+        # _ = list(map(self.input_stream.put, samples))
         for sample in samples:
             self.input_stream.put(sample)
 
@@ -59,19 +61,24 @@ class TFGen:
         self.realtime = False
         Thread(target=self._load_from_dataframe_thread, args=(event_log, case_id_col, attributes_cols)).start()
 
+    def _load_from_generator_thread(self, generator):
+        # put all data from the generator to the queue
+        for sample in generator():
+            self.input_stream.put(sample)
+
     def load_from_generator(self, generator):
         """
-        Loads data from generator. Each yield is a tuple of (case_id, attributes), where attributes value is a tuple of
-        strings (attribute_1, attribute_2, ...)
+        Loads data from generator. Each yield is a tuple of (case_id, attributes), where attributes value is an iterable
+        of strings (attribute_1, attribute_2, ...)
         """
         self.realtime = True
-        map(self.input_stream.put, generator)
+        Thread(target=self._load_from_generator_thread, args=(generator,)).start()
 
     def load_next(self, case_id, *attributes):
         """
         Load stream data one by one.
         :param case_id: str or int
-        :param attributes: str. Tuple of attributes (attribute_1, attribute_2, ...).
+        :param attributes: str. Iterable of attributes (attribute_1, attribute_2, ...).
         """
         self.realtime = True
         self.input_stream.put((case_id, attributes))
@@ -85,7 +92,8 @@ class TFGen:
                     break
 
     def get_output_next(self):
-        return next(self.get_output_generator())
+        generator = self.get_output_generator()
+        return next(generator)
 
     def get_output_list(self):
         if self.realtime:

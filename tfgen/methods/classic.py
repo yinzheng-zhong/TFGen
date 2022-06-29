@@ -3,6 +3,7 @@ from abc import ABC
 from tfgen.methods.base_method import BaseMethod
 import tfgen.utils as utils
 from time import time
+from tfgen import const
 
 
 class Classic(BaseMethod, ABC):
@@ -19,7 +20,12 @@ class Classic(BaseMethod, ABC):
 
     def process_a_single_event(self):
         case_id, event_attr = self.input_stream.get()
-        event_class = utils.convert_attr_to_ec(event_attr)
+
+        if all(map(lambda x: x == const.TOKEN_END_OF_TRACE, event_attr)):
+            event_class = const.TOKEN_END_OF_TRACE
+        else:
+            event_class = utils.convert_attr_to_ec(event_attr)
+
         prev = self.tet.update_event(case_id, event_class)
 
         # reduce the count for transition that went outside the window.
