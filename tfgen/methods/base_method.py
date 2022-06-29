@@ -1,3 +1,5 @@
+from collections import deque
+
 import pandas as pd
 import numpy as np
 from tfgen import const
@@ -12,6 +14,7 @@ class BaseMethod:
         self.output_stream = output_stream
 
         self.tet = TET()
+        self.sliding_window_buffer = deque(maxlen=self.window_size)
 
         self.event_log = None
         self.case_id_col = None

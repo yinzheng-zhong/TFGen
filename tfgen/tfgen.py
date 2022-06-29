@@ -1,11 +1,12 @@
 import pandas as pd
 import numpy as np
-from methods.classic import Classic
+from tfgen.methods.classic import Classic
 from threading import Thread
-import const
+import tfgen.const as const
 import queue
+from tqdm import tqdm
 
-METHOD_CLASSIC = 101
+METHOD_CLASSIC = const.METHOD_CLASSIC
 
 
 class TFGen:
@@ -19,7 +20,7 @@ class TFGen:
         self.ec_lookup = {ec: i for i, ec in enumerate(observable_event_classes)}
 
         # add predefined event classes
-        self.ec_lookup[const.TOKEN_END_OF_TRACE] = len(self.ec_lookup)
+        self.ec_lookup[const.TOKEN_START_OF_TRACE] = len(self.ec_lookup)
         self.ec_lookup[const.TOKEN_END_OF_TRACE] = len(self.ec_lookup)
         self.ec_lookup[const.TOKEN_DEFAULT] = len(self.ec_lookup)
 
@@ -38,6 +39,16 @@ class TFGen:
         else:
             raise Exception("Method not supported")
 
+    def _load_from_dataframe_thread(self, event_log, case_id_col, attributes_cols):
+        case_ids = event_log[case_id_col].values
+        attributes = event_log[attributes_cols].astype(str).values
+        """convert attributes to string"""
+
+        samples = zip(case_ids, attributes)
+
+        for sample in samples:
+            self.input_stream.put(sample)
+
     def load_from_dataframe(self, event_log: pd.DataFrame, case_id_col: str, attributes_cols: list):
         """
         Loads data from pandas dataframe. An offline process
@@ -46,15 +57,7 @@ class TFGen:
         :param attributes_cols: array of column names
         """
         self.realtime = False
-
-        case_ids = event_log[case_id_col].values
-        attributes = event_log[attributes_cols].astype(str).values
-        """convert attributes to string"""
-
-        samples = zip(case_ids, attributes)
-
-        map(self.input_stream.put, samples)
-        self._method_thread.join()
+        Thread(target=self._load_from_dataframe_thread, args=(event_log, case_id_col, attributes_cols)).start()
 
     def load_from_generator(self, generator):
         """
@@ -84,10 +87,10 @@ class TFGen:
     def get_output_next(self):
         return next(self.get_output_generator())
 
-    def get_output_ndarray(self):
+    def get_output_list(self):
         if self.realtime:
             raise Exception("Cannot get ndarray output in realtime mode. Use get_output_generator() or "
                             "get_output_next() instead")
 
-        return np.array(list(self.get_output_generator()))
+        return list(self.get_output_generator())
 
