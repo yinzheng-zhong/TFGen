@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from methods.classic import Classic
 from threading import Thread
+import const
 import queue
 
 METHOD_CLASSIC = 101
@@ -15,10 +16,16 @@ class TFGen:
         :param window_size: The sliding window size.
         :param method:
         """
-        self.observable_event_classes = observable_event_classes
+        self.ec_lookup = {ec: i for i, ec in enumerate(observable_event_classes)}
+
+        # add predefined event classes
+        self.ec_lookup[const.TOKEN_END_OF_TRACE] = len(self.ec_lookup)
+        self.ec_lookup[const.TOKEN_END_OF_TRACE] = len(self.ec_lookup)
+        self.ec_lookup[const.TOKEN_DEFAULT] = len(self.ec_lookup)
+
         self.window_size = window_size
-        self.input_stream = queue.Queue()
-        self.output_stream = queue.Queue()
+        self.input_stream = queue.Queue(maxsize=10)
+        self.output_stream = queue.Queue(maxsize=10)
 
         self._method_thread = Thread(target=self._select_method(method).start_processing)
         self._method_thread.start()
@@ -27,7 +34,7 @@ class TFGen:
 
     def _select_method(self, method):
         if method == METHOD_CLASSIC:
-            return Classic(self.window_size, self.input_stream, self.output_stream)
+            return Classic(self.ec_lookup, self.window_size, self.input_stream, self.output_stream)
         else:
             raise Exception("Method not supported")
 
@@ -40,8 +47,9 @@ class TFGen:
         """
         self.realtime = False
 
-        case_ids = event_log[case_id_col].values()
-        attributes = event_log[attributes_cols].values()
+        case_ids = event_log[case_id_col].values
+        attributes = event_log[attributes_cols].astype(str).values
+        """convert attributes to string"""
 
         samples = zip(case_ids, attributes)
 
@@ -50,16 +58,17 @@ class TFGen:
 
     def load_from_generator(self, generator):
         """
-        Loads data from generator. Each yield is a tuple of (case_id, attributes).
+        Loads data from generator. Each yield is a tuple of (case_id, attributes), where attributes value is a tuple of
+        strings (attribute_1, attribute_2, ...)
         """
         self.realtime = True
         map(self.input_stream.put, generator)
 
-    def load_next(self, case_id, attributes):
+    def load_next(self, case_id, *attributes):
         """
         Load stream data one by one.
         :param case_id: str or int
-        :param attributes: str. Array of attributes.
+        :param attributes: str. Tuple of attributes (attribute_1, attribute_2, ...).
         """
         self.realtime = True
         self.input_stream.put((case_id, attributes))
