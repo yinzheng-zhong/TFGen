@@ -1,2 +1,2 @@
 # TFGen
-A transition-based feature generator package for process logs.
+The process log/event log will be used as input for the feature generator. The feature generator will generate transition matrices.
