@@ -1,10 +1,8 @@
 import pandas as pd
-import numpy as np
 from tfgen.methods.classic import Classic
 from threading import Thread
 import tfgen.const as const
 import queue
-from tqdm import tqdm
 
 METHOD_CLASSIC = const.METHOD_CLASSIC
 
