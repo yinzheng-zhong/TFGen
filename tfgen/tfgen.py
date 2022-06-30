@@ -105,8 +105,8 @@ class TFGen:
         :return:
         """
 
-        if self.input_method == 0:
-            raise Exception("Cannot get offline output in input_method mode. Use get_output_generator() or "
+        if self.input_method != 0:
+            raise Exception("Cannot get offline output in online mode. Use get_output_generator() or "
                             "get_output_next() instead.")
 
         return list(self.get_output_generator(timeout))
