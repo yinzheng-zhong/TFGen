@@ -72,7 +72,7 @@ class TFGen:
         self.realtime = True
         Thread(target=self._load_from_generator_thread, args=(generator,)).start()
 
-    def load_next(self, case_id, *attributes):
+    def load_next(self, case_id, attributes):
         """
         Load stream data one by one.
         :param case_id: str or int
