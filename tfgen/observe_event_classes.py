@@ -2,7 +2,7 @@ import pandas as pd
 import tfgen.utils as utils
 
 
-def get_observed_event_classes(attributes):
+def get_observable_ec(attributes):
     """
     This function finds all observable event classes from an offline dataset.
     :param attributes:
