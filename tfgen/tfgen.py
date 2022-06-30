@@ -29,7 +29,7 @@ class TFGen:
         self._method_thread = Thread(target=self._select_method(method).start_processing)
         self._method_thread.start()
 
-        self.realtime = True
+        self.input_method = 0
 
     def _select_method(self, method):
         if method == METHOD_CLASSIC:
@@ -56,7 +56,7 @@ class TFGen:
         :param case_id_col: the column name
         :param attributes_cols: array of column names
         """
-        self.realtime = False
+        self.input_method = 0
         Thread(target=self._load_from_dataframe_thread, args=(event_log, case_id_col, attributes_cols)).start()
 
     def _load_from_generator_thread(self, generator):
@@ -69,7 +69,7 @@ class TFGen:
         Loads data from generator. Each yield is a tuple of (case_id, attributes), where attributes value is an iterable
         of strings (attribute_1, attribute_2, ...)
         """
-        self.realtime = True
+        self.input_method = 1
         Thread(target=self._load_from_generator_thread, args=(generator,)).start()
 
     def load_next(self, case_id, attributes):
@@ -78,25 +78,36 @@ class TFGen:
         :param case_id: str or int
         :param attributes: str. Iterable of attributes (attribute_1, attribute_2, ...).
         """
-        self.realtime = True
+        self.input_method = 2
         self.input_stream.put((case_id, attributes))
 
-    def get_output_generator(self):
+    def get_output_generator(self, timeout=1):
+        if self.input_method == 2:
+            raise Exception("Cannot get generator with load_next() input."
+                            "Use load_from_generator() or load_from_dataframe()")
+
         while True:
             try:
-                yield self.output_stream.get(block=True, timeout=1)
+                yield self.output_stream.get(block=True, timeout=timeout)
             except queue.Empty:
-                if not self.realtime:
+                if not self.input_method:
                     break
 
     def get_output_next(self):
-        generator = self.get_output_generator()
-        return next(generator)
+        return self.output_stream.get(block=False)
 
-    def get_output_list(self):
-        if self.realtime:
-            raise Exception("Cannot get ndarray output in realtime mode. Use get_output_generator() or "
-                            "get_output_next() instead")
+    def get_output_list(self, timeout=1):
+        """
+        Returns a list of output samples.
+        :param timeout: if the queue is empty for this amount of time, the process is
+        assumed to be finished. Default is 1 second. Increase this value if your processing
+        speed is less than 1 event/second.
+        :return:
+        """
 
-        return list(self.get_output_generator())
+        if self.input_method == 0:
+            raise Exception("Cannot get offline output in input_method mode. Use get_output_generator() or "
+                            "get_output_next() instead.")
+
+        return list(self.get_output_generator(timeout))
 
