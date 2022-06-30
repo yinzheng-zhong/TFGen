@@ -24,7 +24,7 @@ How to use
 
 First we need to get the observable event classes. Better save this for future use, as the change of the event classes
 will change the generated feature. The parameter will be an array or a list of attributes. Check
-release v0.2.0 for datasets we will use below.
+release v0.2.1 for datasets we will use below.
 
 .. code-block:: python
 
@@ -40,7 +40,6 @@ The second parameter is the window size.
 
     from tfgen import TFGen
     tfgen = TFGen(ec, window_size=500)
-
 
 Now we load the data for feature generation. Each case needs to end with EOT marking, and it needs to generate
 be placed under each attribute. Without EOT, the TET will keep growing.
@@ -98,4 +97,5 @@ initialise. Handel the exception if you want to use this method.
             print(tfgen.get_output_next())
         except queue.Empty:
             continue
+
 get_output_next() is compatible with all input methods.

@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 from os import path
 from io import open
 
-VERSION = '0.2.0'
-DESCRIPTION = 'A transition-based feature generator package for process logs.'
+VERSION = '0.2.1'
+DESCRIPTION = 'Online Transition-Based Feature Generation for Anomaly Detection in Concurrent Data Streams.'
 
 current_directory = path.abspath(path.dirname(__file__))
 
