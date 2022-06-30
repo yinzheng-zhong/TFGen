@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from os import path
 from io import open
 
-VERSION = '0.1.5'
+VERSION = '0.1.6'
 DESCRIPTION = 'A transition-based feature generator package for process logs.'
 
 current_directory = path.abspath(path.dirname(__file__))
