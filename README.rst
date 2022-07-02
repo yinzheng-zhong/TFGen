@@ -24,7 +24,7 @@ How to use
 
 First we need to get the observable event classes. Better save this for future use, as the change of the event classes
 will change the generated feature. The parameter will be an array or a list of attributes. Check
-release v0.2.1 for datasets we will use below.
+release `v0.2.1 <https://github.com/yinzheng-zhong/TFGen/releases/tag/v0.2.1>`_ for datasets we will use below.
 
 .. code-block:: python
 
@@ -42,7 +42,39 @@ The second parameter is the window size.
     tfgen = TFGen(ec, window_size=500)
 
 Now we load the data for feature generation. Each case needs to end with EOT marking, and it needs to generate
-be placed under each attribute. Without EOT, the TET will keep growing.
+be placed under each attribute. Without EOT, the TET will keep growing. Something like this:
+
+.. list-table:: Example of input data.
+   :widths: 25 25 25
+   :header-rows: 1
+
+   * - Case_ID
+     - Flags
+     - S/C
+   * - ...
+     - ...
+     - ...
+   * - 13
+     - 000.ACK.FIN.
+     - C
+   * - 13
+     - 000.ACK.
+     - S
+   * - 14
+     - 000.SYN.
+     - C
+   * - 13
+     - 000.ACK.RST.
+     - S
+   * - 13
+     - EOT
+     - EOT
+   * - 14
+     - 000.ACK.SYN.
+     - S
+   * - ...
+     - ...
+     - ...
 
 .. code-block:: python
 
