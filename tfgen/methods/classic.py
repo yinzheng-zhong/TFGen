@@ -4,18 +4,23 @@ from tfgen.methods.base_method import BaseMethod
 import tfgen.utils as utils
 from time import time
 from tfgen import const
+import numpy as np
 
 
 class Classic(BaseMethod, ABC):
     def __init__(self, ec_lookup_table, window_size, input_stream, output_stream):
         super().__init__(ec_lookup_table, window_size, input_stream, output_stream)
 
+        # 10% performance increase by increase/decrease the transition_matrix by a small step (1/window size)
+        # instead of normalise like transition_count/window size. Saved a division operation.
+        self.step = 1 / window_size
+
     def init_window(self):
         for _ in range(self.window_size):
             self.process_a_single_event()
 
         self.output_stream.put(
-            {'case_id': self.current_case, 'transition_table': self.transition_counts / self.window_size}
+            {'case_id': self.current_case, 'transition_table': np.array(self.transition_counts)}
         )
 
     def process_a_single_event(self):
@@ -31,12 +36,12 @@ class Classic(BaseMethod, ABC):
         # reduce the count for transition that went outside the window.
         if len(self.sliding_window_buffer) >= self.window_size:
             transition_out_window = self.sliding_window_buffer[0]
-            self.transition_counts[transition_out_window] -= 1
+            self.transition_counts[transition_out_window] -= self.step
 
         # add the count for the transition that come in.
         transition_new = (self.index_lookup(prev), self.index_lookup(event_class))
         self.sliding_window_buffer.append(transition_new)
-        self.transition_counts[transition_new] += 1
+        self.transition_counts[transition_new] += self.step
 
         self.current_case = case_id
 
@@ -61,5 +66,5 @@ class Classic(BaseMethod, ABC):
                 count = 0
 
             self.output_stream.put(
-                {'case_id': self.current_case, 'transition_table': self.transition_counts / self.window_size}
+                {'case_id': self.current_case, 'transition_table': np.array(self.transition_counts)}
             )
