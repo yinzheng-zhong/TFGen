@@ -23,7 +23,7 @@ class BaseMethod:
         self.current_case = None
 
         _len_lookup = len(ec_lookup_table)
-        self.transition_counts = np.zeros((_len_lookup, _len_lookup), dtype=np.int32)
+        self.transition_counts = np.zeros((_len_lookup, _len_lookup), dtype=np.float)
 
     def index_lookup(self, ec):
         try:
