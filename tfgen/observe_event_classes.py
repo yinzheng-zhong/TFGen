@@ -15,4 +15,4 @@ def get_observable_ec(attributes):
         attributes = list(attributes)
 
     event_classes = set([utils.convert_attr_to_ec(attribute) for attribute in attributes])
-    return list(event_classes)
+    return sorted(list(event_classes))
