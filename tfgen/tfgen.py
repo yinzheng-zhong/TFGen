@@ -43,7 +43,7 @@ class TFGen:
 
     def _load_from_dataframe_thread(self, event_log, case_id_col, attributes_cols):
         case_ids = event_log[case_id_col].values
-        attributes = event_log[attributes_cols].astype(str).values
+        attributes = event_log[attributes_cols].values
         """convert attributes to string"""
 
         samples = zip(case_ids, attributes)
@@ -53,7 +53,7 @@ class TFGen:
         for sample in samples:
             self.input_stream.put(sample)
 
-    def load_from_dataframe(self, event_log: pd.DataFrame, case_id_col: str, attributes_cols: list):
+    def load_from_dataframe(self, event_log: pd.DataFrame, case_id_col, attributes_cols):
         """
         Loads data from pandas dataframe. An offline process
         :param event_log: pandas dataframe
