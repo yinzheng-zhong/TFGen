@@ -23,8 +23,9 @@ How to use
 **How to use**
 
 First we need to get the observable event classes. Better save this for future use, as the change of the event classes
-will change the generated feature. The parameter will be an array or a list of attributes. Check
-release `v0.2.1 <https://github.com/yinzheng-zhong/TFGen/releases/tag/v0.2.1>`_ for datasets we will use below.
+or the change of the order of event classes will change the generated feature. The parameter will be an array or
+a list of attributes. Check release `v0.2.1 <https://github.com/yinzheng-zhong/TFGen/releases/tag/v0.2.1>`_ for
+datasets we will use below.
 
 .. code-block:: python
 

@@ -16,9 +16,6 @@ class TFGen:
         :param method:
         """
 
-        # sort ec_lookup
-        self.ec_lookup = list.sort(observable_event_classes)
-
         self.ec_lookup = {ec: i for i, ec in enumerate(observable_event_classes)}
 
         # add predefined event classes
