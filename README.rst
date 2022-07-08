@@ -89,7 +89,7 @@ The method for loading the dataset in offline mode is:
     tfgen.load_from_dataframe(data_for_feature, case_id_col='Case_ID', attributes_cols=['Flags', 'S/C'])
     output = tfgen.get_output_list()  # this will return a list of data.
 
-Note that the output is a list (or other iterable) of dictionaries {case_id, transition_table},
+Note that the output is a list (or other iterable) of tuples (case_id, transition_table),
 case_id is from the last event and it can be used for labelling the data for supervised learning.
 get_output_list() can only be used in offline mode.
 

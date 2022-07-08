@@ -66,5 +66,5 @@ class Classic(BaseMethod, ABC):
                 count = 0
 
             self.output_stream.put(
-                {'case_id': self.current_case, 'transition_table': np.array(self.transition_counts)}
+                (self.current_case, np.array(self.transition_counts))
             )
