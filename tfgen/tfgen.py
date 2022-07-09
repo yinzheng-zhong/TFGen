@@ -45,10 +45,13 @@ class TFGen:
 
         samples = zip(case_ids, attributes)
 
-        # _ = [self.input_stream.put(sample) for sample in samples]
-        # _ = list(map(self.input_stream.put, samples))
+        # _ = [self._input_stream.put(sample) for sample in samples]
+        # _ = list(map(self._input_stream.put, samples))
         for sample in samples:
             self.input_stream.put(sample)
+
+        # make finished signal
+        self.input_stream.put((const.TOKEN_END_OF_TRACE, None))
 
     def load_from_dataframe(self, event_log: pd.DataFrame, case_id_col, attributes_cols):
         """
@@ -82,22 +85,25 @@ class TFGen:
         self.input_method = 2
         self.input_stream.put((case_id, attributes))
 
-    def get_output_generator(self, timeout=1):
+    def get_output_generator(self):
         if self.input_method == 2:
             raise Exception("Cannot get generator with load_next() input."
                             "Use load_from_generator() or load_from_dataframe()")
 
         while True:
-            try:
-                yield self.output_stream.get(block=True, timeout=timeout)
-            except queue.Empty:
-                if not self.input_method:
-                    break
+            data = self.output_stream.get()
+            if data[0] == const.TOKEN_END_OF_TRACE:
+                return
+
+            yield data
+
+    def quit(self):
+        self.input_stream.put((const.TOKEN_END_OF_TRACE, None))
 
     def get_output_next(self):
         return self.output_stream.get(block=False)
 
-    def get_output_list(self, timeout=1):
+    def get_output_list(self):
         """
         Returns a list of output samples.
         :param timeout: if the queue is empty for this amount of time, the process is
@@ -110,5 +116,5 @@ class TFGen:
             raise Exception("Cannot get offline output in online mode. Use get_output_generator() or "
                             "get_output_next() instead.")
 
-        return list(self.get_output_generator(timeout))
+        return list(self.get_output_generator())
 

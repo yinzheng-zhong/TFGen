@@ -17,14 +17,19 @@ class Classic(BaseMethod, ABC):
 
     def init_window(self):
         for _ in range(self.window_size):
-            self.process_a_single_event()
+            data = self.get_next_data()
 
-        self.output_stream.put(
-            {'case_id': self.current_case, 'transition_table': np.array(self.transition_counts)}
+            if self.finished:
+                return
+
+            self.process_a_single_event(data)
+
+        self._output_stream.put(
+            (self.current_case, np.array(self.transition_counts))
         )
 
-    def process_a_single_event(self):
-        case_id, event_attr = self.input_stream.get()
+    def process_a_single_event(self, data_tuple):
+        case_id, event_attr = data_tuple
 
         if all(map(lambda x: x == const.TOKEN_END_OF_TRACE, event_attr)):
             event_class = const.TOKEN_END_OF_TRACE
@@ -47,13 +52,20 @@ class Classic(BaseMethod, ABC):
 
     def start_processing(self):
         self.init_window()
+        if self.finished:
+            return
 
         count = 0
 
         last_benchmark = time()
 
         while True:
-            self.process_a_single_event()
+            data = self.get_next_data()
+
+            if self.finished:
+                return
+
+            self.process_a_single_event(data)
             count += 1
 
             if not count % 100000:
@@ -65,6 +77,6 @@ class Classic(BaseMethod, ABC):
                 last_benchmark = now
                 count = 0
 
-            self.output_stream.put(
+            self._output_stream.put(
                 (self.current_case, np.array(self.transition_counts))
             )
