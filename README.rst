@@ -42,7 +42,8 @@ The second parameter is the window size.
     from tfgen import TFGen
     tfgen = TFGen(ec, window_size=500)
 
-Now we load the data for feature generation. Each case needs to end with EOT marking, and it needs to generate
+Now we load the data for feature generation. Make sure the data are already in chronological order.
+Each case needs to end with EOT marking, and it needs to generate
 be placed under each attribute. Without EOT, the TET will keep growing. Something like this:
 
 .. list-table:: Example of input data.
@@ -128,7 +129,7 @@ initialise. Handel the exception if you want to use this method.
         tfgen.load_next(case_id, event_attrs)
         try:
             print(tfgen.get_output_next())
-        except queue.Empty:
+        except InitialisingException:
             continue
 
 get_output_next() is compatible with all input methods.

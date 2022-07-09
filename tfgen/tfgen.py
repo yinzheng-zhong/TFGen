@@ -101,7 +101,15 @@ class TFGen:
         self.input_stream.put((const.TOKEN_END_OF_TRACE, None))
 
     def get_output_next(self):
-        return self.output_stream.get(block=False)
+        try:
+            data = self.output_stream.get(block=False)
+        except queue.Empty:
+            raise InitialisingException()
+
+        if data[0] == const.TOKEN_END_OF_TRACE:
+            raise StopIteration
+        else:
+            return data
 
     def get_output_list(self):
         """
@@ -118,3 +126,8 @@ class TFGen:
 
         return list(self.get_output_generator())
 
+
+class InitialisingException(Exception):
+    def __init__(self):
+        msg = "TFGen is still initialising (number of input is less than the window size) and there is no output yet."
+        super().__init__(msg)
