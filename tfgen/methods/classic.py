@@ -24,9 +24,10 @@ class Classic(BaseMethod, ABC):
 
             self.process_a_single_event(data)
 
-        self.put_data(
-            (self.current_case, np.array(self.transition_counts))
-        )
+        self.make_data_avail()
+
+    def make_data_avail(self):
+        self.send_data((self.current_case, np.array(self.transition_counts)))
 
     def process_a_single_event(self, data_tuple):
         case_id, event_attr = data_tuple
@@ -52,6 +53,7 @@ class Classic(BaseMethod, ABC):
 
     def start_processing(self):
         self.init_window()
+
         if self.finished:
             return
 
@@ -77,6 +79,4 @@ class Classic(BaseMethod, ABC):
                 last_benchmark = now
                 count = 0
 
-            self.put_data(
-                (self.current_case, np.array(self.transition_counts))
-            )
+            self.make_data_avail()

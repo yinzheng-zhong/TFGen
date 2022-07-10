@@ -47,11 +47,11 @@ class BaseMethod:
 
         # end of file is reached
         if data[0] == const.TOKEN_END_OF_TRACE:
-            self.put_data(data)
+            self.send_data(data)
             self.finished = True
             return None
         else:
             return data
 
-    def put_data(self, data):
+    def send_data(self, data):
         self._output_stream.put(data)

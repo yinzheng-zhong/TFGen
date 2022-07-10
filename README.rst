@@ -133,3 +133,15 @@ initialise. Handel the exception if you want to use this method.
             continue
 
 get_output_next() is compatible with all input methods.
+
+Varieties
+^^^^^^^^^
+
+Currently two classes are available. The Classic and the ClassicLargeSparse methods. By default, the Classic method is
+used. For event logs that has many event classes, use the ClassicLargeSparse method.
+
+.. code-block:: python
+
+        from tfgen import TFGen
+        tfgen = TFGen(ec, window_size=500, method=TFGen.ClassicLargeSparse)
+

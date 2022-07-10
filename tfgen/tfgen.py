@@ -1,13 +1,15 @@
 import pandas as pd
 from tfgen.methods.classic import Classic
+from tfgen.methods.classic_large_sparse import ClassicLargeSparse
 from threading import Thread
 import tfgen.const as const
 import queue
 
-METHOD_CLASSIC = const.METHOD_CLASSIC
-
 
 class TFGen:
+    METHOD_CLASSIC = const.METHOD_CLASSIC
+    METHOD_CLASSIC_LARGE_SPARSE = const.METHOD_CLASSIC_LARGE_SPARSE
+
     def __init__(self, observable_event_classes: list, window_size=500, method=METHOD_CLASSIC):
         """
         :param observable_event_classes: list of observable event classes. Use observe_event_classes to get the list if
@@ -35,6 +37,8 @@ class TFGen:
     def _select_method(self, method):
         if method == METHOD_CLASSIC:
             return Classic(self.ec_lookup, self.window_size, self.input_stream, self.output_stream)
+        elif method == METHOD_CLASSIC_LARGE_SPARSE:
+            return ClassicLargeSparse(self.ec_lookup, self.window_size, self.input_stream, self.output_stream)
         else:
             raise Exception("Method not supported")
 
