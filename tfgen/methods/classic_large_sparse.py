@@ -1,4 +1,4 @@
-from classic import Classic
+from tfgen.methods.classic import Classic
 from scipy.sparse import csr_matrix
 
 
