@@ -35,9 +35,9 @@ class TFGen:
         self.input_method = 0
 
     def _select_method(self, method):
-        if method == METHOD_CLASSIC:
+        if method == TFGen.METHOD_CLASSIC:
             return Classic(self.ec_lookup, self.window_size, self.input_stream, self.output_stream)
-        elif method == METHOD_CLASSIC_LARGE_SPARSE:
+        elif method == TFGen.METHOD_CLASSIC_LARGE_SPARSE:
             return ClassicLargeSparse(self.ec_lookup, self.window_size, self.input_stream, self.output_stream)
         else:
             raise Exception("Method not supported")
@@ -130,5 +130,6 @@ class TFGen:
 
 class InitialisingException(Exception):
     def __init__(self):
-        msg = "TFGen is still initialising (number of input is less than the window size) and there is no output yet."
+        msg = "TFGen is still initialising (number of input is less than the window size) or preparing the data" \
+              ", so there is no output yet."
         super().__init__(msg)
