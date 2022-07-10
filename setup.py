@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from os import path
 from io import open
 
-VERSION = '0.5.1'
+VERSION = '0.5.2'
 DESCRIPTION = 'Online Transition-Based Feature Generation for Anomaly Detection in Concurrent Data Streams.'
 
 current_directory = path.abspath(path.dirname(__file__))
