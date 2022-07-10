@@ -24,7 +24,7 @@ class Classic(BaseMethod, ABC):
 
             self.process_a_single_event(data)
 
-        self._output_stream.put(
+        self.put_data(
             (self.current_case, np.array(self.transition_counts))
         )
 
@@ -77,6 +77,6 @@ class Classic(BaseMethod, ABC):
                 last_benchmark = now
                 count = 0
 
-            self._output_stream.put(
+            self.put_data(
                 (self.current_case, np.array(self.transition_counts))
             )

@@ -25,7 +25,7 @@ class BaseMethod:
         self.finished = False
 
         _len_lookup = len(ec_lookup_table)
-        self.transition_counts = np.zeros((_len_lookup, _len_lookup), dtype=np.float)
+        self.transition_counts = np.zeros((_len_lookup, _len_lookup), dtype=np.float32)
 
     def index_lookup(self, ec):
         try:

@@ -41,14 +41,11 @@ class TFGen:
     def _load_from_dataframe_thread(self, event_log, case_id_col, attributes_cols):
         case_ids = event_log[case_id_col].values
         attributes = event_log[attributes_cols].values
-        """convert attributes to string"""
-
-        samples = zip(case_ids, attributes)
 
         # _ = [self._input_stream.put(sample) for sample in samples]
         # _ = list(map(self._input_stream.put, samples))
-        for sample in samples:
-            self.input_stream.put(sample)
+        for i in range(len(case_ids)):
+            self.input_stream.put((case_ids[i], attributes[i]))
 
         # make finished signal
         self.input_stream.put((const.TOKEN_END_OF_TRACE, None))
