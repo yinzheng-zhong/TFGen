@@ -43,7 +43,7 @@ The second parameter is the window size.
     tfgen = TFGen(ec, window_size=500)
 
 Now we load the data for feature generation. Make sure the data are already in chronological order.
-Each case needs to end with EOT marking, and it needs to generate
+Each case needs to end with EOT marking, and it needs to
 be placed under each attribute. Without EOT, the TET will keep growing. Something like this:
 
 .. list-table:: Example of input data.
@@ -91,7 +91,7 @@ The method for loading the dataset in offline mode is:
     output = tfgen.get_output_list()  # this will return a list of data.
 
 Note that the output is a list (or other iterable) of tuples (case_id, transition_table),
-case_id is from the last event and it can be used for labelling the data for supervised learning.
+case_id comes from the last processed event and it can be used for labelling the data for supervised learning or validation.
 get_output_list() can only be used in offline mode.
 
 Use the generator as an input for the online streaming.
@@ -124,7 +124,7 @@ initialise. Handel the exception if you want to use this method.
         case_id = sample[0]
         event_attrs = sample[[2, 3]]
 
-        # tfgen.load_next(<you data sample>). The sample is a tuple of (case_id, event_attrs)
+        # tfgen.load_next(<your data sample>). The sample is a tuple of (case_id, event_attrs)
         # and event_attrs is an iterable with multiple attributes.
         tfgen.load_next(case_id, event_attrs)
         try:
