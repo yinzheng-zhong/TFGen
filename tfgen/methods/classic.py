@@ -17,12 +17,12 @@ class Classic(BaseMethod, ABC):
 
     def init_window(self):
         for _ in range(self.window_size):
-            data = self.get_next_data()
+            event = self.get_next_data()
 
             if self.finished:
                 return
 
-            self.process_a_single_event(data)
+            self.process_a_single_event(event)
 
         self.make_data_avail()
 
@@ -62,12 +62,12 @@ class Classic(BaseMethod, ABC):
         last_benchmark = time()
 
         while True:
-            data = self.get_next_data()
+            event = self.get_next_data()
 
             if self.finished:
                 return
 
-            self.process_a_single_event(data)
+            self.process_a_single_event(event)
             count += 1
 
             if not count % 100000:
