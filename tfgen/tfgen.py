@@ -7,8 +7,8 @@ import queue
 
 
 class TFGen:
-    METHOD_CLASSIC = const.METHOD_CLASSIC
-    METHOD_CLASSIC_LARGE_SPARSE = const.METHOD_CLASSIC_LARGE_SPARSE
+    METHOD_CLASSIC = 101
+    METHOD_CLASSIC_LARGE_SPARSE = 102
 
     def __init__(self, observable_event_classes: list, window_size=500, method=METHOD_CLASSIC):
         """

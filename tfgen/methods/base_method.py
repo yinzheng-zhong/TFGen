@@ -43,6 +43,9 @@ class BaseMethod:
         raise NotImplementedError
 
     def get_next_data(self):
+        """
+        get event from input stream.
+        """
         data = self._input_stream.get()
 
         # end of file is reached
@@ -54,4 +57,8 @@ class BaseMethod:
             return data
 
     def send_data(self, data):
+        """
+        send data to output stream.
+        :param data:
+        """
         self._output_stream.put(data)
