@@ -175,9 +175,11 @@ method "self.send_data()".
             self.send_data(processed_data)
             if self.finished:
                 break
+
 Then include the new method in the "TFGen" class found in "tfgen/tfgen.py". Two locations are required to be modified.
 
 .. code-block:: python
+
     class TFGen:
         METHOD_CLASSIC = 101
         METHOD_CLASSIC_LARGE_SPARSE = 102
