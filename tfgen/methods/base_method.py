@@ -49,7 +49,7 @@ class BaseMethod:
         data = self._input_stream.get()
 
         # end of file is reached
-        if data[0] == const.TOKEN_END_OF_STREAM:
+        if data[0] is const.TOKEN_END_OF_STREAM:
             self.send_data(data)
             self.finished = True
             return None

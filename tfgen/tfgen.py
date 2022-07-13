@@ -98,7 +98,7 @@ class TFGen:
 
         while True:
             data = self.output_stream.get()
-            if data[0] == const.TOKEN_END_OF_STREAM:
+            if data[0] is const.TOKEN_END_OF_STREAM:
                 return
 
             yield data
@@ -112,7 +112,7 @@ class TFGen:
         except queue.Empty:
             raise InitialisingException()
 
-        if data[0] == const.TOKEN_END_OF_STREAM:
+        if data[0] is const.TOKEN_END_OF_STREAM:
             raise StopIteration
         else:
             return data
