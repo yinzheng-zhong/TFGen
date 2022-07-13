@@ -52,7 +52,7 @@ class TFGen:
             self.input_stream.put((case_ids[i], attributes[i]))
 
         # make finished signal
-        self.input_stream.put((const.TOKEN_END_OF_TRACE, None))
+        self.terminate_stream()
 
     def load_from_dataframe(self, event_log: pd.DataFrame, case_id_col, attributes_cols):
         """
@@ -65,6 +65,11 @@ class TFGen:
         Thread(target=self._load_from_dataframe_thread, args=(event_log, case_id_col, attributes_cols)).start()
 
     def _load_from_generator_thread(self, generator):
+        """
+        Todo: may need to put end of stream token at the end of the stream.
+        :param generator:
+        :return:
+        """
         # put all data from the generator to the queue
         for sample in generator():
             self.input_stream.put(sample)
@@ -93,13 +98,13 @@ class TFGen:
 
         while True:
             data = self.output_stream.get()
-            if data[0] == const.TOKEN_END_OF_TRACE:
+            if data[0] == const.TOKEN_END_OF_STREAM:
                 return
 
             yield data
 
-    def quit(self):
-        self.input_stream.put((const.TOKEN_END_OF_TRACE, None))
+    def terminate_stream(self):
+        self.input_stream.put((const.TOKEN_END_OF_STREAM, None))
 
     def get_output_next(self):
         try:
@@ -107,7 +112,7 @@ class TFGen:
         except queue.Empty:
             raise InitialisingException()
 
-        if data[0] == const.TOKEN_END_OF_TRACE:
+        if data[0] == const.TOKEN_END_OF_STREAM:
             raise StopIteration
         else:
             return data
@@ -115,10 +120,7 @@ class TFGen:
     def get_output_list(self):
         """
         Returns a list of output samples.
-        :param timeout: if the queue is empty for this amount of time, the process is
-        assumed to be finished. Default is 1 second. Increase this value if your processing
-        speed is less than 1 event/second.
-        :return:
+        :return: list of (case_id, features)
         """
 
         if self.input_method != 0:
