@@ -151,7 +151,7 @@ contain a larger number of event classes.
         tfgen = TFGen(ec, window_size=500, method=TFGen.ClassicLargeSparse)
 
 Implementing New Methods
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^
 By deriving from the "BaseMethod" located in "tfgen/methods/base method.py," one can extend the existing methods by
 creating new method classes. All classes must be placed under "tfgen/methods/" directory. The next event sample must
 be obtained using method "self.get_next_data()," and the generated feature must be sent to the output using
