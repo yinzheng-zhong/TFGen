@@ -186,12 +186,12 @@ Then include the new method in the "TFGen" class found in "tfgen/tfgen.py". Two 
         METHOD_NEW_METHOD = 103  # The first location. New method class
 
         def _select_method(self, method):
-        if method == TFGen.METHOD_CLASSIC:
+        if self.method == TFGen.METHOD_CLASSIC:
             return Classic(self.ec_lookup, self.window_size, self.input_stream, self.output_stream)
-        elif method == TFGen.METHOD_CLASSIC_LARGE_SPARSE:
+        elif self.method == TFGen.METHOD_CLASSIC_LARGE_SPARSE:
             return ClassicLargeSparse(self.ec_lookup, self.window_size, self.input_stream, self.output_stream)
         # The second location. The instance to the new method class
-        elif method == TFGen.METHOD_NEW_METHOD:
+        elif self.method == TFGen.METHOD_NEW_METHOD:
             return NewMethod(self.ec_lookup, self.window_size, self.input_stream, self.output_stream)
         else:
             raise Exception("Method not supported")

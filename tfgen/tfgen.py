@@ -29,18 +29,31 @@ class TFGen:
         self.input_stream = queue.Queue(maxsize=10)
         self.output_stream = queue.Queue(maxsize=10)
 
-        self._method_thread = Thread(target=self._select_method(method).start_processing)
+        self.method = method
+
+        self._method_thread = Thread(target=self._select_method().start_processing)
         self._method_thread.start()
 
         self.input_method = 0
 
-    def _select_method(self, method):
-        if method == TFGen.METHOD_CLASSIC:
+    def _select_method(self, ):
+        if self.method == TFGen.METHOD_CLASSIC:
             return Classic(self.ec_lookup, self.window_size, self.input_stream, self.output_stream)
-        elif method == TFGen.METHOD_CLASSIC_LARGE_SPARSE:
+        elif self.method == TFGen.METHOD_CLASSIC_LARGE_SPARSE:
             return ClassicLargeSparse(self.ec_lookup, self.window_size, self.input_stream, self.output_stream)
         else:
             raise Exception("Method not supported")
+
+    def reset(self):
+        """
+        Reset if new dataset is loaded.
+        :return:
+        """
+        self._method_thread = Thread(target=self._select_method().start_processing)
+        self._method_thread.start()
+
+    def stream_termination_signal(self):
+        self.input_stream.put((const.TOKEN_END_OF_STREAM, None))
 
     def _load_from_dataframe_thread(self, event_log, case_id_col, attributes_cols):
         case_ids = event_log[case_id_col].values
@@ -52,7 +65,7 @@ class TFGen:
             self.input_stream.put((case_ids[i], attributes[i]))
 
         # make finished signal
-        self.terminate_stream()
+        self.stream_termination_signal()
 
     def load_from_dataframe(self, event_log: pd.DataFrame, case_id_col, attributes_cols):
         """
@@ -99,12 +112,10 @@ class TFGen:
         while True:
             data = self.output_stream.get()
             if data[0] is const.TOKEN_END_OF_STREAM:
+                self.reset()
                 return
 
             yield data
-
-    def terminate_stream(self):
-        self.input_stream.put((const.TOKEN_END_OF_STREAM, None))
 
     def get_output_next(self):
         try:
@@ -113,6 +124,7 @@ class TFGen:
             raise InitialisingException()
 
         if data[0] is const.TOKEN_END_OF_STREAM:
+            self.reset()
             raise StopIteration
         else:
             return data
